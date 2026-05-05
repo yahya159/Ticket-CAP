@@ -111,7 +111,7 @@ export const ProjectsEnhanced: React.FC = () => {
   const [isParsingWricef, setIsParsingWricef] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const loadProjects = async () => {
+  const loadProjects = React.useCallback(async () => {
     setLoading(true);
     try {
       const data = await ProjectsAPI.getAll();
@@ -121,11 +121,11 @@ export const ProjectsEnhanced: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     void loadProjects();
-  }, []);
+  }, [loadProjects]);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {

@@ -25,7 +25,7 @@ export const MainLayout: React.FC = () => {
   }, [sidebarCollapsed]);
 
   useEffect(() => {
-    setMobileSidebarOpen(false);
+    queueMicrotask(() => setMobileSidebarOpen(false));
   }, [location.pathname, location.search, location.hash]);
 
   useEffect(() => {

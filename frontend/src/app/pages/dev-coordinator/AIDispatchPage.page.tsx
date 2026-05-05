@@ -16,8 +16,6 @@ import {
   Ticket,
   User,
   AssigneeRecommendation,
-  TICKET_NATURE_LABELS,
-  TICKET_STATUS_LABELS,
 } from '../../types/entities';
 
 const AIDispatchPage: React.FC = () => {

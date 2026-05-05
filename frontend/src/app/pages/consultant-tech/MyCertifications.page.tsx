@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../components/common/PageHeader';import { UsersAPI } from '../../services/odata/usersApi';
 import { Certification, CertificationStatus, User } from '../../types/entities';
@@ -61,20 +61,20 @@ export const MyCertifications: React.FC = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState<CertForm>(EMPTY_FORM);
 
-  useEffect(() => {
+  const loadProfile = useCallback(async () => {
     if (!currentUser) return;
-    void loadProfile();
-  }, [currentUser]);
-
-  const loadProfile = async () => {
     setLoading(true);
     try {
       const all = await UsersAPI.getAll();
-      setProfile(all.find((u) => u.id === currentUser?.id) ?? null);
+      setProfile(all.find((u) => u.id === currentUser.id) ?? null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    void loadProfile();
+  }, [loadProfile]);
 
   const addCertification = async (e: React.FormEvent) => {
     e.preventDefault();

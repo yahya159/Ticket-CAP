@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
-import { Resolver, useForm } from 'react-hook-form';
+import { Resolver, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
@@ -60,6 +60,10 @@ export const AddImputationDialog: React.FC<AddImputationDialogProps> = ({
       description: '',
     },
   });
+  const selectedTicketId = useWatch({
+    control: form.control,
+    name: 'ticketId',
+  });
 
   // Reset form when dialog opens
   React.useEffect(() => {
@@ -109,7 +113,7 @@ export const AddImputationDialog: React.FC<AddImputationDialogProps> = ({
           <div>
             <Label>{t('imputations.ticketLabel')}</Label>
             <Select
-              value={form.watch('ticketId')}
+              value={selectedTicketId}
               onValueChange={(v) => form.setValue('ticketId', v)}
             >
               <SelectTrigger>

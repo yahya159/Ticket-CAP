@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Badge } from '../../components/ui/badge';
 import { Progress } from '../../components/ui/progress';import { TicketsAPI } from '../../services/odata/ticketsApi';
 import { UsersAPI } from '../../services/odata/usersApi';
-import { Ticket, User, TICKET_NATURE_LABELS } from '../../types/entities';
+import { Ticket, User } from '../../types/entities';
 
 const WorkloadPage: React.FC = () => {
   const { t } = useTranslation();

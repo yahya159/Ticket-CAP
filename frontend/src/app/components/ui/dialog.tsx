@@ -93,7 +93,8 @@ const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, id, ...props }, ref) => {
-  const descriptionId = id || `dialog-description-${Math.random().toString(36).substr(2, 9)}`;
+  const generatedId = React.useId();
+  const descriptionId = id || `dialog-description-${generatedId}`;
   return (
     <DialogPrimitive.Description
       ref={ref}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { CheckCircle, Clock, FileText, XCircle, Search, Filter, Plus, FileUp, ExternalLink, CalendarDays } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -67,10 +67,6 @@ export const Deliverables: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isReviewSubmitting, setIsReviewSubmitting] = useState(false);
 
-  useEffect(() => {
-    void loadDeliverables();
-  }, []);
-
   const getStatusBadge = (status: ValidationStatus) => {
     switch (status) {
       case 'APPROVED':
@@ -94,7 +90,7 @@ export const Deliverables: React.FC = () => {
     }
   };
 
-  const loadDeliverables = async () => {
+  const loadDeliverables = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
     try {
@@ -113,7 +109,11 @@ export const Deliverables: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    void loadDeliverables();
+  }, [loadDeliverables]);
 
   const filteredDeliverables = useMemo(() => {
     return deliverables.filter((d) => {

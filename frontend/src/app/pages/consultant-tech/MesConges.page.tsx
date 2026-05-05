@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../components/common/PageHeader';import { LeaveRequestsAPI } from '../../services/odata/leaveRequestsApi';
 import { LeaveRequest, LeaveStatus } from '../../types/entities';
@@ -47,20 +47,20 @@ export const MesConges: React.FC = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState<LeaveForm>(EMPTY_FORM);
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     if (!currentUser) return;
-    void loadData();
-  }, [currentUser]);
-
-  const loadData = async () => {
     setLoading(true);
     try {
-      const data = await LeaveRequestsAPI.getByConsultant(currentUser!.id);
+      const data = await LeaveRequestsAPI.getByConsultant(currentUser.id);
       setRequests(data.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
 
   const submitRequest = async (e: React.FormEvent) => {
     e.preventDefault();

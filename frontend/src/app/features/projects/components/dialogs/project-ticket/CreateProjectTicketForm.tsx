@@ -46,7 +46,6 @@ interface CreateProjectTicketFormProps {
 export const CreateProjectTicketForm: React.FC<CreateProjectTicketFormProps> = ({ vm }) => {
   const titleField = vm.register('title');
   const dueDateField = vm.register('dueDate');
-  const effortHoursField = vm.register('effortHours', { valueAsNumber: true });
   const descriptionField = vm.register('description');
 
   return (
@@ -142,10 +141,10 @@ export const CreateProjectTicketForm: React.FC<CreateProjectTicketFormProps> = (
             id="project-ticket-effort"
             type="number"
             min={0}
-            name={effortHoursField.name}
-            ref={effortHoursField.ref}
-            onChange={(event) => vm.onEffortHoursChange(Number(event.target.value))}
-            onBlur={effortHoursField.onBlur}
+            {...vm.register('effortHours', {
+              valueAsNumber: true,
+              onChange: (event) => vm.onEffortHoursChange(Number(event.target.value)),
+            })}
           />
           {vm.errors.effortHours && <span className="text-xs text-destructive">{vm.errors.effortHours.message}</span>}
           {vm.abaqueSuggestedHours !== null && (

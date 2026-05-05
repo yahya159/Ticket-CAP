@@ -8,7 +8,7 @@ const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_MONTH_RE = /^\d{4}-\d{2}$/;
 
 const parseDateInput = (value: DateInput): Date | null => {
-  if (value == null || value === '') return null;
+  if (value === null || value === undefined || value === '') return null;
   if (value instanceof Date) return new Date(value);
 
   if (typeof value === 'string') {
@@ -69,7 +69,7 @@ export const formatNumber = (
   language?: string,
   options?: Intl.NumberFormatOptions
 ): string => {
-  if (value == null || value === '') return '-';
+  if (value === null || value === undefined || value === '') return '-';
 
   const parsed = typeof value === 'number' ? value : Number(value);
   if (Number.isNaN(parsed)) return String(value);

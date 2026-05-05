@@ -108,7 +108,7 @@ const attachAuditLog = (srv) => {
         userRole: claims?.role ?? null,
         action: event,
         entityName,
-        entityId: entityId != null ? String(entityId) : null,
+        entityId: entityId !== null && entityId !== undefined ? String(entityId) : null,
         details: summarise(req.data),
       };
 

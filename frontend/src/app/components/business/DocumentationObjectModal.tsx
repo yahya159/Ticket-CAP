@@ -78,7 +78,7 @@ export const DocumentationObjectModal: React.FC<DocumentationObjectModalProps> =
     setType('SFD');
     setContent(initialContentFromTicket(ticket));
     setAttachedFiles([]);
-  }, [open, ticket]);
+  }, [open, ticket, t]);
 
   // Cleanup on unmount
   useEffect(() => revokeAllObjectUrls, []);

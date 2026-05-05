@@ -19,7 +19,6 @@ if (!process.env.MOCK_JWT_SECRET) {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('[auth] FATAL: MOCK_JWT_SECRET must be set in production. Refusing to start with default secret.');
   }
-  // eslint-disable-next-line no-console
   console.warn('[auth] MOCK_JWT_SECRET is not set; using development fallback secret.');
 }
 

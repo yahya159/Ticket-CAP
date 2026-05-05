@@ -86,7 +86,6 @@ let odataClientConfig: ODataClientConfig = {
     requestIdHeader: 'x-request-id',
     logger: ODATA_OBSERVABILITY_ENABLED
       ? (event) => {
-          // eslint-disable-next-line no-console
           console.debug('[ODataClient]', event);
         }
       : undefined,

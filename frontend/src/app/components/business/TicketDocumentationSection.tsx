@@ -78,7 +78,7 @@ export const TicketDocumentationSection: React.FC<TicketDocumentationSectionProp
     } finally {
       setLoading(false);
     }
-  }, [ticket.id, ticket.projectId, onDocumentationChanged]);
+  }, [ticket.id, ticket.projectId, onDocumentationChanged, t]);
 
   useEffect(() => {
     void loadDocumentation();

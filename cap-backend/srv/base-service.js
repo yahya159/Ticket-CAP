@@ -2,7 +2,6 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const cds = require('@sap/cds');
 const AuthDomainService = require('./auth/auth.domain.service');
 const { attachAuditLog } = require('./shared/services/audit');
 

@@ -28,22 +28,22 @@ const DEFAULT_SETTINGS: LocalSettings = {
   weeklyDigest: true,
 };
 
+const getInitialSettings = (): LocalSettings => {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return DEFAULT_SETTINGS;
+
+  try {
+    return JSON.parse(raw) as LocalSettings;
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return DEFAULT_SETTINGS;
+  }
+};
+
 export const SettingsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
-  const [settings, setSettings] = useState<LocalSettings>(DEFAULT_SETTINGS);
-
-  useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-
-    try {
-      const parsed = JSON.parse(raw) as LocalSettings;
-      setSettings(parsed);
-    } catch (error) {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, []);
+  const [settings, setSettings] = useState<LocalSettings>(getInitialSettings);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));

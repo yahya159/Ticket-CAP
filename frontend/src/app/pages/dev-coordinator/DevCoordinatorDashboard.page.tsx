@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';import { TicketsAPI } from '../../services/odata/ticketsApi';
 import { UsersAPI } from '../../services/odata/usersApi';
-import { Ticket as TicketType, User, TICKET_STATUS_LABELS, TICKET_NATURE_LABELS } from '../../types/entities';
+import { Ticket as TicketType, User } from '../../types/entities';
 
 const DevCoordinatorDashboard: React.FC = () => {
   const navigate = useNavigate();

@@ -2,11 +2,10 @@
 
 const cds = require('@sap/cds');
 const WricefRepo = require('./wricef.repo');
-const { assertEntityExists, assertInEnum, ENTITIES, MANAGER_ROLES, requireRole } = require('../shared/services/validation');
+const { assertEntityExists, assertInEnum, ENTITIES, requireRole } = require('../shared/services/validation');
 const { nowIso } = require('../shared/utils/timestamp');
 
 const WRICEF_TYPES = ['W', 'R', 'I', 'C', 'E', 'F'];
-const WRICEF_STATUSES = ['DRAFT', 'PENDING_VALIDATION', 'VALIDATED', 'REJECTED'];
 const PM_ROLES = new Set(['ADMIN', 'PROJECT_MANAGER']);
 const MANAGER_CREATE_ROLES = new Set(['ADMIN', 'MANAGER']);
 const extractEntityId = (req) => req.params?.[0]?.ID ?? req.params?.[0] ?? req.data?.ID;

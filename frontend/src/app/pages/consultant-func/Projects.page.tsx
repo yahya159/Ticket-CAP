@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../components/common/PageHeader';import { DeliverablesAPI } from '../../services/odata/deliverablesApi';
 import { NotificationsAPI } from '../../services/odata/notificationsApi';
@@ -27,11 +27,7 @@ export const FuncProjects: React.FC = () => {
   const [feedbackDrafts, setFeedbackDrafts] = useState<Record<string, string>>({});
   const [feedbackHistory, setFeedbackHistory] = useState<Record<string, ProjectFeedback[]>>({});
 
-  useEffect(() => {
-    void loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
     try {
@@ -68,7 +64,11 @@ export const FuncProjects: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
 
   const rows = useMemo(() => {
     return projects.map((project) => {

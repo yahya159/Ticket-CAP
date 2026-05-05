@@ -7,6 +7,7 @@
     "start": "cds-serve",
     "watch": "cds watch",
     "build": "cds build",
+    "lint": "eslint .",
     "test": "jest --forceExit --detectOpenHandles"
   },
   "dependencies": {

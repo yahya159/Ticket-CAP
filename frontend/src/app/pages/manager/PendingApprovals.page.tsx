@@ -57,7 +57,7 @@ const fmtDate = (d?: string | null, locale = 'en-GB') => {
   return formatDateTime(d, locale, { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
-const fmtHours = (h?: number | null) => (h != null ? `${h}h` : '—');
+const fmtHours = (h?: number | null) => (h !== null && h !== undefined ? `${h}h` : '—');
 
 // ---------------------------------------------------------------------------
 // Component

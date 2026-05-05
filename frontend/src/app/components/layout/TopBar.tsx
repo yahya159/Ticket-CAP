@@ -70,18 +70,15 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   useEffect(() => {
     if (!currentUser) {
-      setNotifications([]);
       return;
     }
 
     // Skip polling in direct/mock sessions where no backend token exists.
     if (!getODataAuthToken()) {
-      setNotifications([]);
       return;
     }
 
     let mounted = true;
-    let intervalId: ReturnType<typeof setInterval> | undefined;
     let canPoll = true;
 
     const load = async () => {
@@ -112,7 +109,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     void load();
 
     // Poll every 15 seconds in production
-    intervalId = setInterval(() => {
+    const intervalId = setInterval(() => {
       void load();
     }, 15000);
 
@@ -122,9 +119,14 @@ export const TopBar: React.FC<TopBarProps> = ({
     };
   }, [currentUser]);
 
+  const visibleNotifications = useMemo(
+    () => (currentUser && getODataAuthToken() ? notifications : []),
+    [currentUser, notifications]
+  );
+
   const unreadCount = useMemo(
-    () => notifications.filter((notification) => !notification.read).length,
-    [notifications]
+    () => visibleNotifications.filter((notification) => !notification.read).length,
+    [visibleNotifications]
   );
 
   const currentRoleLabel = currentUser ? t(`roles.${currentUser.role}`) : null;
@@ -218,7 +220,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           notification.id === notificationId ? { ...notification, read: true } : notification
         )
       );
-    } catch (error) {
+    } catch {
       toast.error(t('common.errors.loadFailed'));
     }
   };
@@ -360,10 +362,10 @@ export const TopBar: React.FC<TopBarProps> = ({
           <DropdownMenuContent align="end" className="w-[320px]">
             <DropdownMenuLabel>{t('common.notifications')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {notifications.length === 0 ? (
+            {visibleNotifications.length === 0 ? (
               <p className="px-2 py-4 text-sm text-muted-foreground">{t('common.noNotifications')}</p>
             ) : (
-              notifications.slice(0, 8).map((notification) => (
+              visibleNotifications.slice(0, 8).map((notification) => (
                 <DropdownMenuItem
                   key={notification.id}
                   onSelect={() => void handleNotificationSelect(notification)}
