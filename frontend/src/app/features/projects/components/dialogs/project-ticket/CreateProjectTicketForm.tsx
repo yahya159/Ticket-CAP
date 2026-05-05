@@ -1,0 +1,174 @@
+import React from 'react';
+import { Calculator, Scale } from 'lucide-react';
+import { Badge } from '@/app/components/ui/badge';
+import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
+import { Label } from '@/app/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/app/components/ui/select';
+import { Textarea } from '@/app/components/ui/textarea';
+import {
+  TICKET_COMPLEXITY_LABELS,
+  TICKET_NATURE_LABELS,
+  TicketNature,
+  TicketComplexity,
+} from '@/app/types/entities';
+import { CreateProjectTicketContextBlock } from './CreateProjectTicketContextBlock';
+
+import { UseFormRegister, FieldErrors, UseFormSetValue } from 'react-hook-form';
+import { TicketFormValues } from './schema';
+import { WricefObject } from '@/app/types/entities';
+
+export interface CreateProjectTicketViewModel {
+  projectName: string;
+  wricefObjects: WricefObject[];
+  formValues: TicketFormValues;
+  setValue: UseFormSetValue<TicketFormValues>;
+  register: UseFormRegister<TicketFormValues>;
+  errors: FieldErrors<TicketFormValues>;
+  abaqueSuggestedHours: number | null;
+  isEstimatedByAbaque: boolean;
+  onNatureChange: (value: TicketNature) => void;
+  onComplexityChange: (value: TicketComplexity) => void;
+  onEffortHoursChange: (value: number) => void;
+  onApplyAbaqueEstimate: () => void;
+}
+
+interface CreateProjectTicketFormProps {
+  vm: CreateProjectTicketViewModel;
+}
+
+export const CreateProjectTicketForm: React.FC<CreateProjectTicketFormProps> = ({ vm }) => {
+  const titleField = vm.register('title');
+  const dueDateField = vm.register('dueDate');
+  const effortHoursField = vm.register('effortHours', { valueAsNumber: true });
+  const descriptionField = vm.register('description');
+
+  return (
+    <div className="space-y-4">
+      <CreateProjectTicketContextBlock vm={vm} />
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5 sm:col-span-2">
+          <Label htmlFor="project-ticket-title">Title *</Label>
+          <Input
+            id="project-ticket-title"
+            {...titleField}
+            placeholder="Ticket title"
+          />
+          {vm.errors.title && <span className="text-xs text-destructive">{vm.errors.title.message}</span>}
+        </div>
+        <div className="space-y-1.5">
+          <Label>Ticket Nature</Label>
+          <Select
+            value={vm.formValues.nature}
+            onValueChange={(value) => vm.onNatureChange(value as TicketNature)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(TICKET_NATURE_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Complexity</Label>
+          <Select
+            value={vm.formValues.complexity}
+            onValueChange={(value) => vm.onComplexityChange(value as TicketComplexity)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(TICKET_COMPLEXITY_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Priority</Label>
+          <Select
+            value={vm.formValues.priority}
+            onValueChange={(value) => vm.setValue('priority', value as TicketFormValues['priority'])}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="LOW">Low</SelectItem>
+              <SelectItem value="MEDIUM">Medium</SelectItem>
+              <SelectItem value="HIGH">High</SelectItem>
+              <SelectItem value="CRITICAL">Critical</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="project-ticket-due-date">Due Date</Label>
+          <Input
+            id="project-ticket-due-date"
+            type="date"
+            {...dueDateField}
+          />
+        </div>
+        <div className="space-y-1.5 sm:col-span-2">
+          <div className="flex items-center justify-between gap-2">
+            <Label htmlFor="project-ticket-effort">Effort (Hours)</Label>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={vm.onApplyAbaqueEstimate}
+              disabled={vm.abaqueSuggestedHours === null}
+            >
+              <Calculator className="h-3.5 w-3.5 mr-1" />
+              Use Matrix Estimate
+            </Button>
+          </div>
+          <Input
+            id="project-ticket-effort"
+            type="number"
+            min={0}
+            name={effortHoursField.name}
+            ref={effortHoursField.ref}
+            onChange={(event) => vm.onEffortHoursChange(Number(event.target.value))}
+            onBlur={effortHoursField.onBlur}
+          />
+          {vm.errors.effortHours && <span className="text-xs text-destructive">{vm.errors.effortHours.message}</span>}
+          {vm.abaqueSuggestedHours !== null && (
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span>Matrix suggests {vm.abaqueSuggestedHours}h for the selected nature and complexity.</span>
+              {vm.isEstimatedByAbaque && (
+                <Badge variant="secondary" className="inline-flex items-center gap-1">
+                  <Scale className="h-3 w-3" />
+                  Matrix applied
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
+        <div className="space-y-1.5 sm:col-span-2">
+          <Label htmlFor="project-ticket-description">Description</Label>
+          <Textarea
+            id="project-ticket-description"
+            {...descriptionField}
+            rows={4}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
