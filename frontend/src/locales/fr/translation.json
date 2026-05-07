@@ -590,7 +590,27 @@
         "event": "Événement",
         "message": "Message",
         "status": "Statut",
-        "empty": "Aucune entrée d'audit disponible."
+        "empty": "Aucune entrée d'audit disponible.",
+        "entities": {
+          "Users": "Utilisateur",
+          "Projects": "Projet",
+          "Tickets": "Ticket",
+          "Notifications": "Notification",
+          "TimeLogs": "Journal horaire",
+          "Timesheets": "Feuille de temps",
+          "Evaluations": "Évaluation",
+          "LeaveRequests": "Demande de congé",
+          "Allocations": "Allocation",
+          "Deliverables": "Livrable",
+          "Documentation": "Documentation",
+          "Comments": "Commentaire",
+          "AuditLogs": "Journal d'audit"
+        },
+        "actions": {
+          "CREATE": "Créé",
+          "UPDATE": "Mis à jour",
+          "DELETE": "Supprimé"
+        }
       },
       "auditStatus": {
         "read": "Lu",

@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Activity, Database, ServerCog, Users } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { KPICard } from '../../components/common/KPICard';
-import { NotificationsAPI } from '../../services/odata/notificationsApi';
+import { AuditLogsAPI } from '../../services/odata/auditLogsApi';
 import { ProjectsAPI } from '../../services/odata/projectsApi';
 import { TicketsAPI } from '../../services/odata/ticketsApi';
 import { UsersAPI } from '../../services/odata/usersApi';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
-import { Notification } from '../../types/entities';
+import { AuditLog } from '../../types/entities';
 
 export const AdminDashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -18,22 +18,38 @@ export const AdminDashboard: React.FC = () => {
   const [projectCount, setProjectCount] = useState(0);
   const [ticketCount, setTicketCount] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
-  const [auditEvents, setAuditEvents] = useState<Array<Notification & { userName: string }>>([]);
+  const [auditEvents, setAuditEvents] = useState<Array<AuditLog & { userName: string }>>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Helper function to translate entity names
+  const translateEntityName = (entityName: string): string => {
+    // Strip service prefix (e.g., "UserService.Notifications" -> "Notifications")
+    const cleanEntityName = entityName.includes('.') ? entityName.split('.').pop() || entityName : entityName;
+    const key = `admin.dashboard.auditTable.entities.${cleanEntityName}`;
+    const translated = t(key);
+    // If translation key doesn't exist, fallback to clean entity name
+    return translated === key ? cleanEntityName : translated;
+  };
+
+  // Helper function to translate action types
+  const translateAction = (action: string): string => {
+    const key = `admin.dashboard.auditTable.actions.${action}`;
+    const translated = t(key);
+    // If translation key doesn't exist, fallback to original action
+    return translated === key ? action : translated;
+  };
 
   useEffect(() => {
     const loadData = async () => {
       setLoadError(null);
       try {
-        const [users, projects, tickets] = await Promise.all([
+        const [users, projects, tickets, auditLogs] = await Promise.all([
           UsersAPI.getAll(),
           ProjectsAPI.getAll(),
           TicketsAPI.getAll(),
+          AuditLogsAPI.getRecent(100),
         ]);
 
-        const allNotifications = (
-          await Promise.all(users.map((user) => NotificationsAPI.getByUser(user.id)))
-        ).flat();
         const userNameById = new Map(users.map((user) => [user.id, user.name] as const));
 
         setUserCount(users.length);
@@ -41,8 +57,7 @@ export const AdminDashboard: React.FC = () => {
         setTicketCount(tickets.length);
         setActiveUsers(users.filter((user) => user.active).length);
         setAuditEvents(
-          [...allNotifications]
-            .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+          auditLogs
             .map((event) => ({
               ...event,
               userName: userNameById.get(event.userId) ?? event.userId,
@@ -239,14 +254,18 @@ export const AdminDashboard: React.FC = () => {
                     auditEvents.slice(0, 12).map((event) => (
                       <tr key={event.id}>
                         <td className="px-4 py-3 text-sm text-muted-foreground">
-                          {new Date(event.createdAt).toLocaleString()}
+                          {new Date(event.timestamp).toLocaleString()}
                         </td>
                         <td className="px-4 py-3 text-sm text-foreground">{event.userName}</td>
-                        <td className="px-4 py-3 text-sm font-medium text-foreground">{event.title}</td>
-                        <td className="px-4 py-3 text-sm text-muted-foreground">{event.message}</td>
+                        <td className="px-4 py-3 text-sm font-medium text-foreground">
+                          {translateAction(event.action)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-muted-foreground">
+                          {translateEntityName(event.entityName)} {event.entityId && `(${event.entityId})`}
+                        </td>
                         <td className="px-4 py-3">
-                          <Badge variant={event.read ? 'secondary' : 'default'}>
-                            {event.read ? t('admin.dashboard.auditStatus.read') : t('admin.dashboard.auditStatus.unread')}
+                          <Badge variant={event.action === 'DELETE' ? 'destructive' : 'default'}>
+                            {translateAction(event.action)}
                           </Badge>
                         </td>
                       </tr>

@@ -11,4 +11,5 @@ using { sap.performance.dashboard.db as db } from '../db/schema';
 service CoreService {
   @readonly entity Users as projection on db.Users;
   @readonly entity Tickets as projection on db.Tickets;
+  @readonly entity AuditLogs as projection on db.AuditLogs;
 }

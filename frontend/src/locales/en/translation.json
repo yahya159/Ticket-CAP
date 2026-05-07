@@ -618,7 +618,27 @@
         "event": "Event",
         "message": "Message",
         "status": "Status",
-        "empty": "No audit entries available."
+        "empty": "No audit entries available.",
+        "entities": {
+          "Users": "User",
+          "Projects": "Project",
+          "Tickets": "Ticket",
+          "Notifications": "Notification",
+          "TimeLogs": "Time Log",
+          "Timesheets": "Timesheet",
+          "Evaluations": "Evaluation",
+          "LeaveRequests": "Leave Request",
+          "Allocations": "Allocation",
+          "Deliverables": "Deliverable",
+          "Documentation": "Documentation",
+          "Comments": "Comment",
+          "AuditLogs": "Audit Log"
+        },
+        "actions": {
+          "CREATE": "Created",
+          "UPDATE": "Updated",
+          "DELETE": "Deleted"
+        }
       },
       "auditStatus": {
         "read": "Read",

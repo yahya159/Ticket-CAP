@@ -45,3 +45,4 @@ export { LeaveRequestsAPI } from './leaveRequestsApi';
 export { TimeLogsAPI } from './timeLogsApi';
 export { ImputationsAPI } from './imputationsApi';
 export { ImputationPeriodsAPI } from './imputationPeriodsApi';
+export { AuditLogsAPI } from './auditLogsApi';

@@ -437,6 +437,17 @@ export interface Notification {
   createdAt: string;
 }
 
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  userId: string;
+  userRole: string;
+  action: string; // CREATE, UPDATE, DELETE
+  entityName: string;
+  entityId: string;
+  details: string;
+}
+
 export interface ProjectFeedback {
   id: string;
   projectId: string;
