@@ -6,7 +6,10 @@
   "scripts": {
     "start": "cds-serve",
     "watch": "cds watch",
-    "build": "cds build",
+    "dev:web": "npm run dev --prefix app/frontend",
+    "dev:all": "node scripts/dev-all.js",
+    "build:web": "npm run build --prefix app/frontend",
+    "build": "npm run build:web && cds build",
     "lint": "eslint .",
     "test": "jest --forceExit --detectOpenHandles"
   },
