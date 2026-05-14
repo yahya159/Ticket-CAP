@@ -1,11 +1,13 @@
 'use strict';
 
+const net = require('node:net');
 const { spawn } = require('node:child_process');
 const path = require('node:path');
 
 const rootDir = path.resolve(__dirname, '..');
 const frontendDir = path.resolve(rootDir, 'app', 'frontend');
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const DEFAULT_BACKEND_PORT = Number(process.env.VITE_BACKEND_PORT || process.env.PORT || 4004);
 
 const processes = [];
 let shuttingDown = false;
@@ -23,13 +25,31 @@ const forwardOutput = (name, stream) => {
   });
 };
 
-const startProcess = (name, command, args, cwd) => {
+const isPortAvailable = (port) =>
+  new Promise((resolve) => {
+    const server = net.createServer();
+    server.unref();
+    server.once('error', () => resolve(false));
+    server.listen(port, '127.0.0.1', () => {
+      server.close(() => resolve(true));
+    });
+  });
+
+const findAvailablePort = async (startPort, maxAttempts = 25) => {
+  for (let port = startPort; port < startPort + maxAttempts; port += 1) {
+    if (await isPortAvailable(port)) return port;
+  }
+  throw new Error(`Unable to find an available backend port starting at ${startPort}`);
+};
+
+const startProcess = (name, command, args, cwd, env) => {
   const child = spawn(command, args, {
     cwd,
-    env: process.env,
+    env,
     shell: process.platform === 'win32',
   });
 
+  processes.push(child);
   forwardOutput(name, child.stdout);
   forwardOutput(name, child.stderr);
 
@@ -47,6 +67,7 @@ const startProcess = (name, command, args, cwd) => {
     process.exit(code ?? 0);
   });
 
+  return child;
 };
 
 const shutdown = () => {
@@ -65,5 +86,26 @@ const shutdown = () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-startProcess('backend', npmCommand, ['run', 'watch'], rootDir);
-startProcess('frontend', npmCommand, ['run', 'dev'], frontendDir);
+const main = async () => {
+  const backendPort = await findAvailablePort(DEFAULT_BACKEND_PORT);
+  const backendEnv = {
+    ...process.env,
+    PORT: String(backendPort),
+    VITE_BACKEND_PORT: String(backendPort),
+  };
+  const frontendEnv = {
+    ...process.env,
+    VITE_BACKEND_PORT: String(backendPort),
+    VITE_ODATA_BASE_URL: '/odata/v4',
+  };
+
+  console.log(`[dev-all] backend port ${backendPort} selected`);
+  startProcess('backend', npmCommand, ['run', 'start'], rootDir, backendEnv);
+  startProcess('frontend', npmCommand, ['run', 'dev'], frontendDir, frontendEnv);
+};
+
+void main().catch((error) => {
+  console.error('[dev-all] failed to start development servers');
+  console.error(error);
+  process.exit(1);
+});
