@@ -25,15 +25,23 @@ const forwardOutput = (name, stream) => {
   });
 };
 
-const isPortAvailable = (port) =>
+const isPortAvailableOnHost = (port, host) =>
   new Promise((resolve) => {
     const server = net.createServer();
     server.unref();
     server.once('error', () => resolve(false));
-    server.listen(port, '127.0.0.1', () => {
+    server.listen(port, host, () => {
       server.close(() => resolve(true));
     });
   });
+
+const isPortAvailable = async (port) => {
+  const checks = await Promise.all([
+    isPortAvailableOnHost(port, '127.0.0.1'),
+    isPortAvailableOnHost(port, '::'),
+  ]);
+  return checks.every(Boolean);
+};
 
 const findAvailablePort = async (startPort, maxAttempts = 25) => {
   for (let port = startPort; port < startPort + maxAttempts; port += 1) {
