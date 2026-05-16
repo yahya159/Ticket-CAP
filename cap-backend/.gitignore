@@ -1,11 +1,18 @@
+# Ignore rules for the monolithic CAP app
+
 # Dependencies
 node_modules/
 
-# CAP build output
+# Build output
 gen/
 dist/
+build/
 
-# SQLite database (runtime artifact – seed via cds deploy)
+# SQLite database (runtime artifact - seed via cds deploy)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
 db/*.db
 db/*.db-journal
 db/*.db-wal
@@ -18,6 +25,8 @@ db/*.db-shm
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Environment files
 .env
@@ -27,9 +36,21 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Editor
 .vscode/settings.json
 .idea/
+*.iml
 *.swp
 *.swo
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# Test coverage
+coverage/
+.nyc_output/

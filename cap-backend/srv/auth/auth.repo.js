@@ -4,9 +4,8 @@ const cds = require('@sap/cds');
 
 class AuthRepo {
   async findUserByEmail(email) {
-    return cds.db.run(
-      SELECT.one
-        .from('sap.performance.dashboard.db.Users')
+    const users = await cds.db.run(
+      SELECT.from('sap.performance.dashboard.db.Users')
         .columns(
           'ID',
           'name',
@@ -15,20 +14,25 @@ class AuthRepo {
           'active',
           'availabilityPercent',
           'teamId',
-          'avatarUrl',
-          { skills: ['skill'] },
-          { certifications: ['name', 'date'] }
+          'avatarUrl'
         )
-        .where({ email, active: true })
+        .where({ email })
     );
+    const user = users[0];
+    if (user && (user.active === true || user.active === 'true' || user.active === 1 || user.active === '1')) {
+      return user;
+    }
+    return null;
   }
 
   async listActiveUsers() {
-    return cds.db.run(
+    const users = await cds.db.run(
       SELECT.from('sap.performance.dashboard.db.Users')
-        .columns('ID', 'name', 'email', 'role')
-        .where({ active: true })
+        .columns('ID', 'name', 'email', 'role', 'active')
     );
+    const result = users.filter(u => u.active === true || u.active === 'true' || u.active === 1 || u.active === '1');
+    console.log('[AuthRepo] listActiveUsers returned:', result?.length ?? 0, 'users');
+    return result;
   }
 }
 
