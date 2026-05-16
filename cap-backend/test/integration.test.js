@@ -190,6 +190,29 @@ describe('Authentication', () => {
     authToken = data.token;
   });
 
+  test('POST /authenticate works for every seeded demo account', async () => {
+    const demoAccounts = [
+      ['alice.admin@inetum.com', 'Admin#2026', 'ADMIN'],
+      ['marc.manager@inetum.com', 'Manager#2026', 'MANAGER'],
+      ['theo.tech@inetum.com', 'Tech#2026', 'CONSULTANT_TECHNIQUE'],
+      ['fatima.fonc@inetum.com', 'Func#2026', 'CONSULTANT_FONCTIONNEL'],
+      ['pierre.pm@inetum.com', 'PM#2026', 'PROJECT_MANAGER'],
+      ['diana.devco@inetum.com', 'DevCo#2026', 'DEV_COORDINATOR'],
+    ];
+
+    for (const [email, password, role] of demoAccounts) {
+      const { status, data } = await POST('/odata/v4/user/authenticate', {
+        email,
+        password,
+      });
+
+      expect(status).toBe(200);
+      expect(data.token).toBeTruthy();
+      expect(data.user.email).toBe(email);
+      expect(data.user.role).toBe(role);
+    }
+  });
+
   test('POST /authenticate with bad password returns 401', async () => {
     try {
       await POST('/odata/v4/user/authenticate', {

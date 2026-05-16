@@ -18,5 +18,8 @@
   },
   "sql": {
     "native_hana_associations": false
+  },
+  "watch": {
+    "ignore": ["db/performance.db-wal", "db/performance.db-shm", "**/*.db-wal", "**/*.db-shm"]
   }
 }
